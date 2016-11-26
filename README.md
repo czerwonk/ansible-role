@@ -3,7 +3,7 @@
 This is a simple wrapper for Ansible to run a single role without the need to generate a playbook first.
 
 ## Requirements
-* ansible must be installed and added to $PATH
+* Ansible has to be installed and added to $PATH
 
 ## Install
 ```
