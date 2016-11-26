@@ -5,6 +5,11 @@ This is a simple wrapper for Ansible to run a single role without the need to ge
 ## Requirements
 * ansible must be installed and added to $PATH
 
+## Install
+```
+go install ansible-role.go
+```
+
 ## Use
 Executing the foo role using ansible arguments for become:
 ```
