@@ -13,18 +13,22 @@ func main() {
 	}
 
 	roleName := os.Args[1]
-	executeRole(roleName)
+	err := executeRole(roleName)
+
+	if err != nil {
+		os.Exit(2)
+	}
 }
 
-func executeRole(name string) {
-	fmt.Println("Role: ", name)
+func executeRole(roleName string) error {
+	fmt.Println("Role: ", roleName)
 
-	fileName := "/tmp/ansible-role-" + name + ".yml"
+	fileName := "/tmp/ansible-role-" + roleName + ".yml"
 	fmt.Println("Creating temporary playbook file in ", fileName)
-	createFile(name, fileName)
+	createFile(roleName, fileName)
 	defer deleteFile(fileName)
 
-	executeAnsible(fileName)
+	return executeAnsible(fileName)
 }
 
 func createFile(roleName string, fileName string) {
@@ -57,14 +61,15 @@ func checkError(err error) {
 	}
 }
 
-func executeAnsible(fileName string) {
+func executeAnsible(fileName string) error {
 	fmt.Println("Starting ansible playbook")
 
 	ansibleArgs := os.Args[2:]
 	ansibleArgs = append(ansibleArgs, fileName)
+
 	cmd := exec.Command("ansible-playbook", ansibleArgs...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
-	cmd.Run()
+	return cmd.Run()
 }
