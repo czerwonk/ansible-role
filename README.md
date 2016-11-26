@@ -11,7 +11,10 @@ go install ansible-role.go
 ```
 
 ## Use
-Executing the foo role using ansible arguments for become:
+Executing a role named foo with ansible arguments for become:
 ```
-> ansible-role foo -b --ask-user-pass
+ansible-role foo -b --ask-user-pass
 ```
+
+## Ansible
+see https://github.com/ansible/ansible
