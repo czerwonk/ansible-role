@@ -11,9 +11,9 @@ go install ansible-role.go
 ```
 
 ## Use
-Executing a role named foo with ansible arguments for become:
+Executing (privileged) a role named foo on each host in group servers:
 ```
-ansible-role foo -b --ask-user-pass
+ansible-role foo -b --ask-user-pass -l servers
 ```
 
 ## Ansible
