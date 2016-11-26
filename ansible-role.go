@@ -8,7 +8,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Error: You have to enter an role name!")
+		fmt.Println("Error: You have to enter a role name!")
 		os.Exit(1)
 	}
 
