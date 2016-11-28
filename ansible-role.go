@@ -1,12 +1,26 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
 )
 
+const version string = "0.1"
+
+var (
+	showVersion = flag.Bool("version", false, "Show version")
+)
+
 func main() {
+	flag.Parse()
+
+	if *showVersion {
+		printVersion()
+		os.Exit(0)
+	}
+
 	if len(os.Args) < 2 {
 		fmt.Println("Error: You have to enter a role name!")
 		os.Exit(1)
@@ -20,11 +34,16 @@ func main() {
 	}
 }
 
+func printVersion() {
+	fmt.Println("ansible-role")
+	fmt.Printf("Version: %s\n", version)
+}
+
 func executeRole(roleName string) error {
-	fmt.Println("Role: ", roleName)
+	fmt.Printf("Role: %s\n", roleName)
 
 	fileName := "/tmp/ansible-role-" + roleName + ".yml"
-	fmt.Println("Creating temporary playbook file in ", fileName)
+	fmt.Printf("Creating temporary playbook file in %s\n", fileName)
 	createFile(roleName, fileName)
 	defer deleteFile(fileName)
 
@@ -41,7 +60,7 @@ func createFile(roleName string, fileName string) {
 
 func deleteFile(fileName string) {
 	if _, err := os.Stat(fileName); err == nil {
-		fmt.Println("Deleting ", fileName)
+		fmt.Printf("Deleting %s\n", fileName)
 		os.Remove(fileName)
 	}
 }
