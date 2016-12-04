@@ -7,7 +7,7 @@ This is a simple wrapper for Ansible to run a single role without the need to ge
 
 ## Install
 ```
-go install ansible-role.go
+go get github.com/czerwonk/go-ansible-role
 ```
 
 ## Use
