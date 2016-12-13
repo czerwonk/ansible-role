@@ -13,7 +13,7 @@ go get github.com/czerwonk/ansible-role
 ## Use
 Executing (privileged) a role named foo on each host in group servers:
 ```
-ansible-role foo -b --ask-user-pass -l servers
+ansible-role foo servers -b --ask-user-pass
 ```
 
 ## Ansible
