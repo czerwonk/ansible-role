@@ -7,7 +7,7 @@ import (
 	"os/exec"
 )
 
-const version string = "0.1"
+const version string = "0.2"
 
 var (
 	showVersion = flag.Bool("version", false, "Show version")
