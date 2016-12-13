@@ -21,13 +21,14 @@ func main() {
 		os.Exit(0)
 	}
 
-	if len(os.Args) < 2 {
-		fmt.Println("Error: You have to enter a role name!")
+	if len(os.Args) < 3 {
+		fmt.Println("Usage: ansible-role $role $hosts [ $ansible_args ]")
 		os.Exit(1)
 	}
 
 	roleName := os.Args[1]
-	err := executeRole(roleName)
+	hosts := os.Args[2]
+	err := executeRole(roleName, hosts)
 
 	if err != nil {
 		os.Exit(2)
@@ -39,23 +40,23 @@ func printVersion() {
 	fmt.Printf("Version: %s\n", version)
 }
 
-func executeRole(roleName string) error {
+func executeRole(roleName string, hosts string) error {
 	fmt.Printf("Role: %s\n", roleName)
 
 	fileName := "/tmp/ansible-role-" + roleName + ".yml"
 	fmt.Printf("Creating temporary playbook file in %s\n", fileName)
-	createFile(roleName, fileName)
+	createFile(roleName, hosts, fileName)
 	defer deleteFile(fileName)
 
 	return executeAnsible(fileName)
 }
 
-func createFile(roleName string, fileName string) {
+func createFile(roleName string, hosts string, fileName string) {
 	f, err := os.Create(fileName)
 	checkError(err)
 	defer f.Close()
 
-	writeFileContent(roleName, f)
+	writeFileContent(roleName, hosts, f)
 }
 
 func deleteFile(fileName string) {
@@ -65,11 +66,11 @@ func deleteFile(fileName string) {
 	}
 }
 
-func writeFileContent(roleName string, f *os.File) {
+func writeFileContent(roleName string, hosts string, f *os.File) {
 	fmt.Println("Generating playbook content")
 
 	fmt.Fprintln(f, "---")
-	fmt.Fprintln(f, "- hosts: all")
+	fmt.Fprintf(f, "- hosts: %s\n", hosts)
 	fmt.Fprintln(f, "  roles:")
 	fmt.Fprintln(f, "  - ", roleName)
 }
@@ -83,7 +84,7 @@ func checkError(err error) {
 func executeAnsible(fileName string) error {
 	fmt.Println("Starting ansible playbook")
 
-	ansibleArgs := os.Args[2:]
+	ansibleArgs := os.Args[3:]
 	ansibleArgs = append(ansibleArgs, fileName)
 
 	cmd := exec.Command("ansible-playbook", ansibleArgs...)
