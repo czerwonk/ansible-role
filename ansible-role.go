@@ -43,7 +43,7 @@ func printVersion() {
 func executeRole(roleName string, hosts string) error {
 	fmt.Printf("Role: %s\n", roleName)
 
-	fileName := "tmp-ansible-role-" + roleName + ".yml"
+	fileName := "ansible-role-" + roleName + ".yml"
 	fmt.Printf("Creating temporary playbook file in %s\n", fileName)
 	createFile(roleName, hosts, fileName)
 	defer deleteFile(fileName)
