@@ -7,11 +7,18 @@ import (
 	"os/exec"
 )
 
-const version string = "0.3"
+const version string = "0.3.1"
 
 var (
 	showVersion = flag.Bool("version", false, "Show version")
 )
+
+func init() {
+	flag.Usage = func() {
+		fmt.Println("Usage: ansible-role $rolename $servers [ any further ansible-playbook parameters ]\n")
+		flag.PrintDefaults()
+	}
+}
 
 func main() {
 	flag.Parse()
