@@ -1,4 +1,5 @@
 # ansible-role [![Build Status](https://travis-ci.org/czerwonk/ansible-role.svg)][travis]
+[![Go Report Card](https://goreportcard.com/badge/github.com/czerwonk/ansible-role)][goreportcard]
 
 This is a simple wrapper for Ansible to run a single role without the need to generate a playbook first.
 
@@ -7,7 +8,7 @@ This is a simple wrapper for Ansible to run a single role without the need to ge
 
 ## Install
 ```
-go get github.com/czerwonk/ansible-role
+go get -u github.com/czerwonk/ansible-role
 ```
 
 ## Use
@@ -20,3 +21,4 @@ ansible-role foo servers -b --ask-pass --ask-become-pass
 see https://github.com/ansible/ansible
 
 [travis]: https://travis-ci.org/czerwonk/ansible-role
+[goreportcard]: https://goreportcard.com/report/github.com/czerwonk/ansible-role
