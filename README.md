@@ -1,4 +1,5 @@
-# ansible-role [![Build Status](https://travis-ci.org/czerwonk/ansible-role.svg)][travis]
+# ansible-role 
+[![Build Status](https://travis-ci.org/czerwonk/ansible-role.svg)][travis]
 [![Go Report Card](https://goreportcard.com/badge/github.com/czerwonk/ansible-role)][goreportcard]
 
 This is a simple wrapper for Ansible to run a single role without the need to generate a playbook first.
