@@ -3,21 +3,23 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 )
 
-const version string = "0.3.1"
+const version string = "0.4"
 
 var (
 	showVersion = flag.Bool("version", false, "Show version")
+	force       = flag.Bool("force", false, "Disables safty checks")
+	debug       = flag.Bool("debug", false, "Prints debug output")
+	args        []string
 )
 
 func init() {
-	flag.Usage = func() {
-		fmt.Println("Usage: ansible-role $rolename $servers [ any further ansible-playbook parameters ]\n")
-		flag.PrintDefaults()
-	}
+	flag.Usage = printUsage
+	args = make([]string, 0)
 }
 
 func main() {
@@ -28,13 +30,20 @@ func main() {
 		os.Exit(0)
 	}
 
-	if len(os.Args) < 3 {
-		fmt.Println("Usage: ansible-role $role $hosts [ $ansible_args ]")
+	args = flag.Args()
+	if len(args) < 3 {
+		printUsage()
 		os.Exit(1)
 	}
 
-	roleName := os.Args[1]
-	hosts := os.Args[2]
+	roleName := args[0]
+	hosts := args[1]
+
+	if hosts == "all" && !*force {
+		fmt.Println("Executing roles for group all might be dangerous. Please add -force parameter to allow this action.")
+		os.Exit(1)
+	}
+
 	err := executeRole(roleName, hosts)
 
 	if err != nil {
@@ -42,15 +51,21 @@ func main() {
 	}
 }
 
+func printUsage() {
+	fmt.Println("Usage: ansible-role [ -force ] $rolename $servers [ any further ansible-playbook parameters ]\n")
+	flag.PrintDefaults()
+}
+
 func printVersion() {
 	fmt.Println("ansible-role")
 	fmt.Printf("Version: %s\n", version)
+	fmt.Println("Author: Daniel Czerwonk")
 }
 
 func executeRole(roleName string, hosts string) error {
 	fmt.Printf("Role: %s\n", roleName)
 
-	fileName := "ansible-role-" + roleName + ".yml"
+	fileName := "/tmp/ansible-role-" + roleName + ".yml"
 	fmt.Printf("Creating temporary playbook file in %s\n", fileName)
 	createFile(roleName, hosts, fileName)
 	defer deleteFile(fileName)
@@ -63,7 +78,12 @@ func createFile(roleName string, hosts string, fileName string) {
 	checkError(err)
 	defer f.Close()
 
-	writeFileContent(roleName, hosts, f)
+	var w io.Writer = f
+	if *debug {
+		w = &debugWriter{writer: w}
+	}
+
+	writeFileContent(roleName, hosts, w)
 }
 
 func deleteFile(fileName string) {
@@ -73,13 +93,13 @@ func deleteFile(fileName string) {
 	}
 }
 
-func writeFileContent(roleName string, hosts string, f *os.File) {
+func writeFileContent(roleName string, hosts string, w io.Writer) {
 	fmt.Println("Generating playbook content")
 
-	fmt.Fprintln(f, "---")
-	fmt.Fprintf(f, "- hosts: %s\n", hosts)
-	fmt.Fprintln(f, "  roles:")
-	fmt.Fprintln(f, "  - ", roleName)
+	fmt.Fprintln(w, "---")
+	fmt.Fprintf(w, "- hosts: %s\n", hosts)
+	fmt.Fprintln(w, "  roles:")
+	fmt.Fprintln(w, "  - ", roleName)
 }
 
 func checkError(err error) {
@@ -91,10 +111,15 @@ func checkError(err error) {
 func executeAnsible(fileName string) error {
 	fmt.Println("Starting ansible playbook")
 
-	ansibleArgs := os.Args[3:]
+	ansibleArgs := args[2:]
 	ansibleArgs = append(ansibleArgs, fileName)
 
 	cmd := exec.Command("ansible-playbook", ansibleArgs...)
+
+	if *debug {
+		fmt.Printf("%v %s\n", cmd.Path, cmd.Args)
+	}
+
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
