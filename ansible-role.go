@@ -8,7 +8,7 @@ import (
 	"os/exec"
 )
 
-const version string = "0.4"
+const version string = "0.4.1"
 
 var (
 	showVersion = flag.Bool("version", false, "Show version")
@@ -31,7 +31,7 @@ func main() {
 	}
 
 	args = flag.Args()
-	if len(args) < 3 {
+	if len(args) < 2 {
 		printUsage()
 		os.Exit(1)
 	}
