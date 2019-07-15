@@ -8,12 +8,13 @@ import (
 	"os/exec"
 )
 
-const version string = "0.4.1"
+const version string = "0.4.2"
 
 var (
 	showVersion = flag.Bool("version", false, "Show version")
 	force       = flag.Bool("force", false, "Disables safty checks")
 	debug       = flag.Bool("debug", false, "Prints debug output")
+	gatherFacts = flag.Bool("gather-facts", true, "Gather information of target hosts")
 	args        []string
 )
 
@@ -52,7 +53,7 @@ func main() {
 }
 
 func printUsage() {
-	fmt.Println("Usage: ansible-role [ -force ] $rolename $servers [ any further ansible-playbook parameters ]\n")
+	fmt.Print("Usage: ansible-role [ -force ] $rolename $servers [ any further ansible-playbook parameters ]\n\n")
 	flag.PrintDefaults()
 }
 
@@ -96,8 +97,12 @@ func deleteFile(fileName string) {
 func writeFileContent(roleName string, hosts string, w io.Writer) {
 	fmt.Println("Generating playbook content")
 
-	fmt.Fprintln(w, "---")
 	fmt.Fprintf(w, "- hosts: %s\n", hosts)
+
+	if !*gatherFacts {
+		fmt.Fprintln(w, "  gather_facts: no")
+	}
+
 	fmt.Fprintln(w, "  roles:")
 	fmt.Fprintln(w, "  - ", roleName)
 }
