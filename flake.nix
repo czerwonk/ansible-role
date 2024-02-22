@@ -17,10 +17,10 @@
     {
       overlays.default = _final: prev:
         let
-          inherit (prev) buildGoModule callPackage lib;
+          inherit (prev) buildGo122Module callPackage lib;
         in
         {
-          ansible-role = callPackage ./nix/package.nix { inherit buildGoModule lib; };
+          ansible-role = callPackage ./package.nix { inherit buildGo122Module lib; };
         };
 
       packages = forAllSystems (system: rec {

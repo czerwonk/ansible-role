@@ -1,10 +1,10 @@
-{ lib, buildGoModule }:
+{ lib, buildGo122Module }:
 
-buildGoModule {
+buildGo122Module {
   pname = "ansible-role";
   version = "0.4.4";
 
-  src = lib.cleanSource ../.;
+  src = lib.cleanSource ./.;
 
   vendorHash = "sha256-g+yaVIx4jxpAQ/+WrGKxhVeliYx7nLQe/zsGpxV4Fn4=";
 
