@@ -64,22 +64,25 @@ func printVersion() {
 	fmt.Println("Author: Daniel Czerwonk")
 }
 
-func executeRole(roleName string, host string) error {
+func executeRole(roleName string, hosts string) error {
 	fmt.Printf("Role: %s\n", roleName)
 
-	fileName := "/tmp/ansible-role-" + roleName + ".yml"
-	fmt.Printf("Creating temporary playbook file in %s\n", fileName)
-	createFile(roleName, host, fileName)
-	defer deleteFile(fileName)
+	f, err := os.CreateTemp("", "*.yml")
+	if err != nil {
+		return fmt.Errorf("could not create playbook file: %w", err)
+	}
+	defer os.Remove(f.Name())
 
-	return executeAnsible(fileName)
+	fmt.Printf("Creating temporary playbook file in %s\n", f.Name())
+	err = writePlaybook(roleName, hosts, f)
+	if err != nil {
+		return err
+	}
+
+	return executeAnsible(f.Name())
 }
 
-func createFile(roleName string, hosts string, fileName string) {
-	f, err := os.Create(fileName)
-	if err != nil {
-		panic(err)
-	}
+func writePlaybook(roleName string, hosts string, f *os.File) error {
 	defer f.Close()
 
 	var w io.Writer = f
@@ -87,20 +90,6 @@ func createFile(roleName string, hosts string, fileName string) {
 		w = &debugWriter{writer: w}
 	}
 
-	err = writeFileContent(roleName, hosts, w)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func deleteFile(fileName string) {
-	if _, err := os.Stat(fileName); err == nil {
-		fmt.Printf("Deleting %s\n", fileName)
-		os.Remove(fileName)
-	}
-}
-
-func writeFileContent(roleName string, hosts string, w io.Writer) error {
 	fmt.Println("Generating playbook content")
 	p := playbook{
 		Hosts:       []string{hosts},
