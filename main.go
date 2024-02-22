@@ -103,7 +103,7 @@ func writePlaybook(roleName string, hosts string, f *os.File) error {
 
 	_, err = w.Write(b)
 	if err != nil {
-		return fmt.Errorf("could not write playbook to file", err)
+		return fmt.Errorf("could not write playbook to file: %w", err)
 	}
 
 	return nil
