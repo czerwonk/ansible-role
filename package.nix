@@ -1,4 +1,4 @@
-{ lib, buildGo122Module }:
+{ pkgs, lib, buildGo122Module }:
 
 buildGo122Module {
   pname = "ansible-role";
@@ -6,7 +6,7 @@ buildGo122Module {
 
   src = lib.cleanSource ./.;
 
-  vendorHash = "sha256-g+yaVIx4jxpAQ/+WrGKxhVeliYx7nLQe/zsGpxV4Fn4=";
+  vendorHash = pkgs.lib.fileContents ./go.mod.sri;
 
   CGO_ENABLED = 0;
 
