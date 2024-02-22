@@ -14,7 +14,7 @@ const version string = "0.4.4"
 
 var (
 	showVersion = flag.Bool("version", false, "Show version")
-	force       = flag.Bool("force", false, "Disables safty checks")
+	force       = flag.Bool("force", false, "Disables safety checks")
 	debug       = flag.Bool("debug", false, "Prints debug output")
 	gatherFacts = flag.Bool("gather-facts", true, "Gather information of target hosts")
 	args        []string
