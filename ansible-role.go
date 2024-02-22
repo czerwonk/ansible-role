@@ -6,9 +6,11 @@ import (
 	"io"
 	"os"
 	"os/exec"
+
+	"gopkg.in/yaml.v3"
 )
 
-const version string = "0.4.3"
+const version string = "0.4.4"
 
 var (
 	showVersion = flag.Bool("version", false, "Show version")
@@ -46,7 +48,6 @@ func main() {
 	}
 
 	err := executeRole(roleName, hosts)
-
 	if err != nil {
 		os.Exit(2)
 	}
@@ -63,12 +64,12 @@ func printVersion() {
 	fmt.Println("Author: Daniel Czerwonk")
 }
 
-func executeRole(roleName string, hosts string) error {
+func executeRole(roleName string, host string) error {
 	fmt.Printf("Role: %s\n", roleName)
 
 	fileName := "/tmp/ansible-role-" + roleName + ".yml"
 	fmt.Printf("Creating temporary playbook file in %s\n", fileName)
-	createFile(roleName, hosts, fileName)
+	createFile(roleName, host, fileName)
 	defer deleteFile(fileName)
 
 	return executeAnsible(fileName)
@@ -76,7 +77,9 @@ func executeRole(roleName string, hosts string) error {
 
 func createFile(roleName string, hosts string, fileName string) {
 	f, err := os.Create(fileName)
-	checkError(err)
+	if err != nil {
+		panic(err)
+	}
 	defer f.Close()
 
 	var w io.Writer = f
@@ -84,7 +87,10 @@ func createFile(roleName string, hosts string, fileName string) {
 		w = &debugWriter{writer: w}
 	}
 
-	writeFileContent(roleName, hosts, w)
+	err = writeFileContent(roleName, hosts, w)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func deleteFile(fileName string) {
@@ -94,23 +100,24 @@ func deleteFile(fileName string) {
 	}
 }
 
-func writeFileContent(roleName string, hosts string, w io.Writer) {
+func writeFileContent(roleName string, hosts string, w io.Writer) error {
 	fmt.Println("Generating playbook content")
-
-	fmt.Fprintf(w, "- hosts: %s\n", hosts)
-
-	if !*gatherFacts {
-		fmt.Fprintln(w, "  gather_facts: no")
+	p := playbook{
+		Hosts:       []string{hosts},
+		GatherFacts: *gatherFacts,
+		Roles:       []string{roleName},
 	}
-
-	fmt.Fprintln(w, "  roles:")
-	fmt.Fprintln(w, "  - ", roleName)
-}
-
-func checkError(err error) {
+	b, err := yaml.Marshal([]playbook{p})
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("could not create playbook YAML: %w", err)
 	}
+
+	_, err = w.Write(b)
+	if err != nil {
+		return fmt.Errorf("could not write playbook to file", err)
+	}
+
+	return nil
 }
 
 func executeAnsible(fileName string) error {
@@ -128,5 +135,6 @@ func executeAnsible(fileName string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
+
 	return cmd.Run()
 }
