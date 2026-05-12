@@ -97,7 +97,7 @@ fn print_usage() {
 fn print_version() {
     println!("ansible-role");
     println!("Version: {VERSION}");
-    println!("Author: Daniel Czerwonk");
+    println!("Author: Daniel Brendgen-Czerwonk");
 }
 
 fn execute_role(
