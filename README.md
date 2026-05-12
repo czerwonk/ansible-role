@@ -1,22 +1,30 @@
-# ansible-role 
-[![Build Status](https://travis-ci.org/czerwonk/ansible-role.svg)](https://travis-ci.org/czerwonk/ansible-role)
-[![Go Report Card](https://goreportcard.com/badge/github.com/czerwonk/ansible-role)](https://goreportcard.com/report/github.com/czerwonk/ansible-role)
+# ansible-role
 
 This is a simple wrapper for Ansible to run a single role without the need to generate a playbook first.
 
 ## Requirements
-* Ansible has to be installed and added to $PATH
+* Ansible has to be installed and added to `$PATH`
 
 ## Install
+
+### Using Nix
 ```
-go get -u github.com/czerwonk/ansible-role
+nix profile install github:czerwonk/ansible-role
+```
+
+### From source
+```
+cargo install --path .
 ```
 
 ## Use
-Executing (privileged) a role named foo on each host in group servers:
+Executing (privileged) a role named `foo` on each host in group `servers`:
 ```
-ansible-role foo servers -b --ask-pass --ask-become-pass
+ansible-role foo servers -b --ask-become-pass
 ```
+
+## Notes
+The playbook is passed to `ansible-playbook` via stdin (`/dev/stdin`), so no temporary file is written to disk. As a side effect, interactive password prompts (`--ask-pass`) are not supported — use SSH keys or `--vault-password-file` instead.
 
 ## Ansible
 see https://github.com/ansible/ansible

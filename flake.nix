@@ -17,10 +17,10 @@
     {
       overlays.default = _final: prev:
         let
-          inherit (prev) buildGo122Module callPackage lib;
+          inherit (prev) rustPlatform callPackage lib;
         in
         {
-          ansible-role = callPackage ./package.nix { inherit buildGo122Module lib; };
+          ansible-role = callPackage ./package.nix { inherit rustPlatform lib; };
         };
 
       packages = forAllSystems (system: rec {
