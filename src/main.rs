@@ -1,7 +1,8 @@
-use anyhow::{Context, Result};
-use serde::Serialize;
 use std::io::Write;
 use std::process::{Command, Stdio};
+
+use anyhow::{Context, Result};
+use serde::Serialize;
 
 const VERSION: &str = "0.5.0";
 
