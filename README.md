@@ -24,7 +24,7 @@ ansible-role foo servers -b --ask-become-pass
 ```
 
 ## Notes
-The playbook is passed to `ansible-playbook` via stdin (`/dev/stdin`), so no temporary file is written to disk. As a side effect, interactive password prompts (`--ask-pass`) are not supported — use SSH keys or `--vault-password-file` instead.
+The playbook is passed to `ansible-playbook` via stdin (`/dev/stdin`), so no temporary file is written to disk.
 
 ## Ansible
 see https://github.com/ansible/ansible
